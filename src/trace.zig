@@ -30,12 +30,14 @@ const FmtStr = struct {
         truncated: void,
     },
 
-    pub fn initNull() FmtStr { return .{ .ptr_opt = null, .len = undefined }; }
+    pub fn initNull() FmtStr {
+        return .{ .ptr_opt = null, .len = undefined };
+    }
     pub fn initSlice(s: []const u8) FmtStr {
         if (s.len > max_str_len) {
             return .{ .ptr_opt = s.ptr, .len = .truncated };
         }
-        return .{ .ptr_opt = s.ptr, .len = .{ .len = @intCast(u8, s.len) } };
+        return .{ .ptr_opt = s.ptr, .len = .{ .len = @as(u8, s.len) } };
     }
 
     pub fn initSentinel(s: [*:0]const u8) FmtStr {
@@ -63,6 +65,6 @@ const FmtStr = struct {
             .full => |len| .{ .s_len = len, .suffix = "" },
             .truncated => .{ .s_len = max_str_len - 3, .suffix = "..." },
         };
-        try writer.print("{*} \"{}\"{s}", .{ptr, std.zig.fmtEscapes(ptr[0 .. part.s_len]), part.suffix});
+        try writer.print("{*} \"{}\"{s}", .{ ptr, std.zig.fmtEscapes(ptr[0..part.s_len]), part.suffix });
     }
 };
